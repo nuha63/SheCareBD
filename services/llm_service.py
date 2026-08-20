@@ -48,7 +48,7 @@ LLM_FALLBACK_MESSAGE = (
 )
 
 # Model name — centralised so it is easy to upgrade later
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-3.6-flash"
 
 
 # ==================================================
