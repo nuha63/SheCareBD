@@ -25,7 +25,6 @@ import logging
 from typing import Optional
 
 from google import genai
-from google.genai import types
 from dotenv import load_dotenv
 
 # Load .env if not already loaded (safe to call multiple times)
@@ -44,8 +43,10 @@ REQUIRED_DISCLAIMER = (
 )
 
 LLM_FALLBACK_MESSAGE = (
-    "এই মুহূর্তে আপনার জন্য একটি AI wellness insight তৈরি করা সম্ভব হচ্ছে না। "
-    "কিছুক্ষণ পরে আবার চেষ্টা করুন। " + REQUIRED_DISCLAIMER
+    "দুঃখিত, আপনার প্রশ্নের ধরণটি আমাদের এআই সুরক্ষা নীতির কারণে উত্তর দেওয়া সম্ভব হচ্ছে না। "
+    "আমরা শুধুমাত্র সাধারণ স্বাস্থ্য, সুস্থতা এবং লাইফস্টাইল নিয়ে আলোচনা করতে পারি। "
+    "কোনো রোগ নির্ণয় বা ওষুধের জন্য চিকিৎসকের পরামর্শ নিন। "
+    + REQUIRED_DISCLAIMER
 )
 
 # Model name — centralised so it is easy to upgrade later
@@ -63,7 +64,7 @@ You are a wellness education assistant for SheCare BD, a Bangla-first women's we
 IDENTITY AND SCOPE:
 - You are NOT a doctor, nurse, or medical professional.
 - You provide general wellness, lifestyle, and educational information only.
-- Your purpose is to help users understand patterns in their own health logs.
+- Your purpose is to help users understand patterns in their own health logs and provide general health education.
 
 ABSOLUTE PROHIBITIONS — you must NEVER:
 1. Diagnose any disease, disorder, or medical condition.
@@ -81,7 +82,6 @@ DATA GROUNDING:
 - Clearly distinguish observed patterns from general wellness education.
 
 LANGUAGE AND TONE:
-- Respond in Bengali (Bangla) unless the user writes in English, in which case you may respond in English.
 - Be empathetic, warm, and supportive.
 - Use cautious, association-based language such as:
     * "may be associated with"
@@ -92,22 +92,18 @@ LANGUAGE AND TONE:
 - Do NOT use definitive causal language such as:
     * "X causes Y"
     * "কম ঘুমের কারণে আপনার cramps হচ্ছে"
+- Never claim certainty about a medical condition.
 
-GUIDANCE SCOPE (what you CAN discuss):
-- Sleep hygiene and rest habits
-- Hydration and nutrition education
-- Exercise and movement
-- Stress management and mindfulness
-- Mood and emotional wellbeing patterns
-- General menstrual cycle education
-- Lifestyle habits that may support general wellbeing
-- Encouraging users to notice patterns in their logs
+PREGNANCY AND GENERAL WELLNESS GUIDANCE:
+- For pregnancy-related questions, ALWAYS prefer general educational and wellness guidance (e.g., general nutrition, hydration, light exercise, rest habits).
+- Legitimate educational/general wellness questions about pregnancy are allowed and should be answered safely without medical prescriptions.
+- Discussing healthy foods, sleep routines, and safe exercises during pregnancy is ENCOURAGED.
+- Scope of guidance includes: Sleep hygiene, hydration, nutrition education, exercise and movement, stress management, mood patterns, and menstrual cycle education.
 
-IF ASKED FOR DIAGNOSIS / MEDICATION / PRESCRIPTION:
+IF ASKED FOR DIAGNOSIS / MEDICATION / PRESCRIPTION / MEDICAL TREATMENT:
 - Politely explain that you are not able to provide that information.
 - Redirect to general wellness guidance.
-- Always recommend consulting a registered healthcare professional
-  for persistent, severe, or concerning symptoms.
+- Always recommend consulting a registered healthcare professional for persistent, severe, or concerning symptoms.
 
 MANDATORY DISCLAIMER:
 Every single response MUST end with exactly this line:
@@ -217,18 +213,6 @@ def generate(system_prompt: str, user_content: str) -> str:
         response = client.models.generate_content(
             model=GEMINI_MODEL,
             contents=full_prompt,
-            config=types.GenerateContentConfig(
-                safety_settings=[
-                    types.SafetySetting(
-                        category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                    ),
-                    types.SafetySetting(
-                        category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                    ),
-                ]
-            )
         )
 
 

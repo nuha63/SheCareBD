@@ -67,6 +67,41 @@ def test_input_risk_check():
         "Period question → safe (must not over-block)",
     )
 
+    # 4a. Pregnancy food → safe
+    assert_eq(
+        input_risk_check("আমি গর্ভাবস্থায় কী ধরনের খাবার খাব?"),
+        "safe",
+        "Pregnancy food → safe",
+    )
+
+    # 4b. Pregnancy healthy food → safe
+    assert_eq(
+        input_risk_check("pregnancy-তে healthy খাবার কী কী?"),
+        "safe",
+        "Pregnancy healthy food → safe",
+    )
+
+    # 4c. Suggest healthy food → safe
+    assert_eq(
+        input_risk_check("Suggest me some healthy food during pregnancy"),
+        "safe",
+        "Suggest healthy food → safe",
+    )
+
+    # 4d. Pregnancy exercise → safe
+    assert_eq(
+        input_risk_check("গর্ভাবস্থায় কী ধরনের হালকা exercise করা যায়?"),
+        "safe",
+        "Pregnancy exercise → safe",
+    )
+
+    # 4e. Pregnancy sleep routine → safe
+    assert_eq(
+        input_risk_check("pregnancy-তে sleep routine কীভাবে ভালো করা যায়?"),
+        "safe",
+        "Pregnancy sleep routine → safe",
+    )
+
     # 5. 'What should I take?' → medical_risk
     assert_eq(
         input_risk_check("What should I take?"),
@@ -102,6 +137,13 @@ def test_input_risk_check():
         "Numeric dosage pattern → medical_risk",
     )
 
+    # 9a. 500 mg ki khabo → medical_risk
+    assert_eq(
+        input_risk_check("500 mg কি খাব?"),
+        "medical_risk",
+        "500 mg ki khabo → medical_risk",
+    )
+
     # 10. Prescription request → medical_risk
     assert_eq(
         input_risk_check("Can you prescribe something for me?"),
@@ -121,6 +163,20 @@ def test_input_risk_check():
         input_risk_check("ki medicine khabo period pain er jonno?"),
         "medical_risk",
         "Mixed Bangla-English medical → medical_risk",
+    )
+
+    # 12a. What treatment should I follow → medical_risk
+    assert_eq(
+        input_risk_check("What treatment should I follow?"),
+        "medical_risk",
+        "Treatment follow → medical_risk",
+    )
+
+    # 12b. Gestational diabetes diagnosis → medical_risk
+    assert_eq(
+        input_risk_check("আমার কি gestational diabetes হয়েছে?"),
+        "medical_risk",
+        "Gestational diabetes diagnosis → medical_risk",
     )
 
     # 13. Tablet keyword → medical_risk
