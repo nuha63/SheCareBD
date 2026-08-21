@@ -25,6 +25,7 @@ import logging
 from typing import Optional
 
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 # Load .env if not already loaded (safe to call multiple times)
@@ -212,13 +213,22 @@ def generate(system_prompt: str, user_content: str) -> str:
     )
 
 
-    # --------------------------------------------------
-    # 4. Call Gemini
-    # --------------------------------------------------
     try:
         response = client.models.generate_content(
             model=GEMINI_MODEL,
             contents=full_prompt,
+            config=types.GenerateContentConfig(
+                safety_settings=[
+                    types.SafetySetting(
+                        category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                    ),
+                    types.SafetySetting(
+                        category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                    ),
+                ]
+            )
         )
 
 
